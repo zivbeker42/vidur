@@ -212,3 +212,17 @@ class Qwen72BModelConfig(QwenModelConfig):
     @staticmethod
     def get_name():
         return "Qwen/Qwen-72B"
+
+
+@dataclass
+class TinyLlama_1BModelConfig(Llama2ModelConfig):
+    num_layers: int = 22
+    num_q_heads: int = 32
+    num_kv_heads: int = 4
+    embedding_dim: int = 2048
+    mlp_hidden_dim: int = 5632
+    max_position_embeddings: int = 2048
+
+    @staticmethod
+    def get_name():
+        return "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
