@@ -71,6 +71,9 @@ class ModelConfig:
 
     def get_num_kv_heads(self, parallel_config: ParallelConfig):
         return self.num_kv_heads // parallel_config.tensor_parallel_size
+        
+    def get_num_layers(self, parallel_config: ParallelConfig):
+        return self.num_layers // parallel_config.pipeline_parallel_size
 
     def get_head_size(self):
         return self.embedding_dim // self.num_q_heads
