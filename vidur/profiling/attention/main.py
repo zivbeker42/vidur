@@ -125,18 +125,11 @@ def profile_model(
         pipeline_parallel_size=1,
     )
 
-    promises = []
     all_results = []
 
-    model_wrapper_actor = ray.remote(
-        num_cpus=1,
-        num_gpus=1,
-    )(
-        AttentionWrapper,
-    ).options(runtime_env={"env_vars": {"KINETO_LOG_LEVEL": "5"}})
-
-    model_wrappers = [
-        model_wrapper_actor.remote(
+    if args.disable_ray:
+        # Run sequentially in the main process
+        model_wrapper = AttentionWrapper(
             model_config,
             parallel_config,
             max_num_blocks,
@@ -145,23 +138,50 @@ def profile_model(
             args.attention_backend,
             dtype,
         )
-        for _ in range(args.num_gpus)
-    ]
 
-    for attention_input in input_combinations:
-        worker_id = len(promises)
-        promise = model_wrappers[worker_id].profile.remote(attention_input)
-        promises.append(promise)
+        for attention_input in input_combinations:
+            result = model_wrapper.profile(attention_input)
+            if result:
+                all_results.append(result)
+            pbar.update(1)
 
-        if len(promises) >= args.num_gpus:
-            results = ray.get(promises)
-            all_results.extend(results)
-            promises = []
+    else:
+        # Run using Ray
+        promises = []
+        model_wrapper_actor = ray.remote(
+            num_cpus=1,
+            num_gpus=1,
+        )(
+            AttentionWrapper,
+        ).options(runtime_env={"env_vars": {"KINETO_LOG_LEVEL": "5"}})
 
-        pbar.update(1)
+        model_wrappers = [
+            model_wrapper_actor.remote(
+                model_config,
+                parallel_config,
+                max_num_blocks,
+                args.max_model_len,
+                args.block_size,
+                args.attention_backend,
+                dtype,
+            )
+            for _ in range(args.num_gpus)
+        ]
 
-    results = ray.get(promises)
-    all_results.extend(results)
+        for attention_input in input_combinations:
+            worker_id = len(promises)
+            promise = model_wrappers[worker_id].profile.remote(attention_input)
+            promises.append(promise)
+
+            if len(promises) >= args.num_gpus:
+                results = ray.get(promises)
+                all_results.extend(results)
+                promises = []
+
+            pbar.update(1)
+
+        results = ray.get(promises)
+        all_results.extend(results)
 
     # filter all none results
     all_results = list(filter(None, all_results))
