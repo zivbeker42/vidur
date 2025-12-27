@@ -224,6 +224,7 @@ def main():
                 ),
                 args.block_size,
                 dtype,
+                gpu_memory_utilization=0.5,
             )
             max_num_blocks_dict[(model, num_tensor_parallel_workers)] = max_num_blocks
             total_combos[(model, num_tensor_parallel_workers)] = list(
