@@ -10,6 +10,23 @@ from vidur.profiling.common.cuda_timer import CudaTimer
 # monkey patching the CudaTimer class to use the sarathi implementation
 sarathi.metrics.cuda_timer.CudaTimer = CudaTimer
 
+# Monkeypatch fix for Sarathi FlashinferAttentionWrapper missing get_instance
+try:
+    from sarathi.model_executor.attention.flashinfer_attention_wrapper import (
+        FlashinferAttentionWrapper,
+    )
+
+    if not hasattr(FlashinferAttentionWrapper, "get_instance"):
+
+        def get_instance_patched(cls):
+            if not hasattr(cls, "_instance"):
+                cls._instance = cls()
+            return cls._instance
+
+        FlashinferAttentionWrapper.get_instance = classmethod(get_instance_patched)
+except ImportError:
+    pass
+
 from sarathi.config import ParallelConfig
 from sarathi.model_executor.attention import (
     AttentionBackend,
