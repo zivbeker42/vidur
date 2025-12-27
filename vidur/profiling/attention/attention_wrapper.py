@@ -57,7 +57,7 @@ try:
                 # We will create a list of references to the same cache block
                 # to simulate all layers having memory allocated (or just satisfy the index access).
                 num_layers = self._backend.num_layers
-                fake_layer_caches = [cache for _ in range(num_layers)]
+                fake_layer_caches = torch.stack([cache for _ in range(num_layers)])
                 
                 # Directly set the gpu_cache attribute if set_cache doesn't exist
                 if hasattr(self._backend, "set_cache"):
