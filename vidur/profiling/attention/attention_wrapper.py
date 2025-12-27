@@ -36,6 +36,27 @@ try:
                     model_config, parallel_config, cache_config, device
                 )
 
+            def get_cache_block(self, num_blocks, dtype, device):
+                # We need to manually call set_cache on the backend because
+                # Sarathi's get_cache_block typically returns the cache but
+                # doesn't automatically register it if it's external.
+                # However, FlashinferAttentionWrapper.forward expects self.gpu_cache to be set.
+                
+                cache = self._backend.get_cache_block(num_blocks, dtype, device)
+                
+                # We will create a list of references to the same cache block
+                # to simulate all layers having memory allocated (or just satisfy the index access).
+                num_layers = self._backend.num_layers
+                fake_layer_caches = [cache for _ in range(num_layers)]
+                
+                # Directly set the gpu_cache attribute if set_cache doesn't exist
+                if hasattr(self._backend, "set_cache"):
+                     self._backend.set_cache(fake_layer_caches)
+                else:
+                     self._backend.gpu_cache = fake_layer_caches
+                     
+                return cache
+
             def __getattr__(self, name):
                 if self._backend is None:
                     raise RuntimeError("FlashinferAttentionWrapper not initialized! Call init() first.")
