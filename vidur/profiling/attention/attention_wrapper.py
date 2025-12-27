@@ -70,6 +70,13 @@ try:
             return _proxy_instance
 
         FlashinferAttentionWrapper.get_instance = classmethod(get_instance_patched)
+
+    # Monkeypatch MetricsStore to ensure singleton exists
+    from sarathi.metrics.metrics_store import MetricsStore
+
+    if not hasattr(MetricsStore, "_instance"):
+        MetricsStore._instance = MetricsStore()
+
 except ImportError:
     pass
 
