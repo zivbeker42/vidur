@@ -18,16 +18,22 @@ try:
 
     if not hasattr(FlashinferAttentionWrapper, "get_instance"):
 
+        class DummyCacheConfig:
+            def __init__(self, block_size, num_gpu_blocks):
+                self.block_size = block_size
+                self.num_gpu_blocks = num_gpu_blocks
+                self.num_cpu_blocks = 0 
+
         class LazyFlashinferWrapperProxy:
             def __init__(self):
                 self._backend = None
 
-            def init(self, model_config, parallel_config, block_size, device):
-                # Try to instantiate the real wrapper
-                # Note: 'block_size' might need to be a CacheConfig object if Sarathi expects it.
-                # We pass it through and hope Sarathi handles int or we fix it later.
+            def init(self, model_config, parallel_config, block_size, device, max_num_blocks):
+                # Wrap block_size and max_num_blocks in a dummy config
+                cache_config = DummyCacheConfig(block_size, max_num_blocks)
+                
                 self._backend = FlashinferAttentionWrapper(
-                    model_config, parallel_config, block_size, device
+                    model_config, parallel_config, cache_config, device
                 )
 
             def __getattr__(self, name):
@@ -96,6 +102,7 @@ class AttentionWrapper:
             self._parallel_config,
             self._block_size,
             self._device,
+            max_num_blocks, # Passed explicitly
         )
         self._max_blocks_per_sequence = ceil(max_model_len / self._block_size)
         # We create (big) KV tensors and reuse them
