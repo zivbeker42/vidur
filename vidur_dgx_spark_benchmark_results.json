@@ -1,0 +1,120 @@
+{
+  "experiment_id": "tinyllama-1b-t4-local-run1",
+  "config": {
+    "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "tp": 1,
+    "pp": 1,
+    "gpu": "Local-GPU"
+  },
+  "workload": {
+    "type": "synthetic_poisson_mixed",
+    "rps_levels": [
+      0.5,
+      1.0,
+      2.0,
+      4.0
+    ],
+    "phase_a_probes": [
+      [
+        128,
+        128
+      ],
+      [
+        512,
+        128
+      ],
+      [
+        1024,
+        512
+      ],
+      [
+        2048,
+        128
+      ]
+    ]
+  },
+  "metrics": {
+    "phase_a_raw": [
+      {
+        "prompt_len": 128,
+        "decode_len": 128,
+        "ttft_ms": 24.211406707763672,
+        "tpot_ms": 12.648201364231861,
+        "e2e_latency_s": 1.63053297996521,
+        "output_tokens": 128,
+        "status": "success"
+      },
+      {
+        "prompt_len": 128,
+        "decode_len": 128,
+        "ttft_ms": 24.405479431152344,
+        "tpot_ms": 12.626649826530397,
+        "e2e_latency_s": 1.6279900074005127,
+        "output_tokens": 128,
+        "status": "success"
+      },
+      {
+        "prompt_len": 128,
+        "decode_len": 128,
+        "ttft_ms": 24.036645889282227,
+        "tpot_ms": 12.647249567227101,
+        "e2e_latency_s": 1.630237340927124,
+        "output_tokens": 128,
+        "status": "success"
+      },
+      {
+        "prompt_len": 512,
+        "decode_len": 128,
+        "ttft_ms": 64.41998481750488,
+        "tpot_ms": 12.838162775114766,
+        "e2e_latency_s": 1.69486665725708,
+        "output_tokens": 128,
+        "status": "success"
+      },
+      {
+        "prompt_len": 512,
+        "decode_len": 128,
+        "ttft_ms": 68.66168975830078,
+        "tpot_ms": 12.848991108691598,
+        "e2e_latency_s": 1.7004835605621338,
+        "output_tokens": 128,
+        "status": "success"
+      },
+      {
+        "prompt_len": 512,
+        "decode_len": 128,
+        "ttft_ms": 63.98892402648926,
+        "tpot_ms": 12.86112792848602,
+        "e2e_latency_s": 1.6973521709442139,
+        "output_tokens": 128,
+        "status": "success"
+      }
+    ],
+    "phase_b_summary": {
+      "0.5": {
+        "ttft_p50": 70.97244262695312,
+        "ttft_p99": 79.99701023101807,
+        "tpot_p50": 11.444716941653274,
+        "e2e_p99": 1.740705108642578
+      },
+      "1.0": {
+        "ttft_p50": 70.95909118652344,
+        "ttft_p99": 99.06535387039186,
+        "tpot_p50": 11.487820017056203,
+        "e2e_p99": 1.7061287593841552
+      },
+      "2.0": {
+        "ttft_p50": 76.08175277709961,
+        "ttft_p99": 219.3368577957153,
+        "tpot_p50": 13.164839406651774,
+        "e2e_p99": 1.9166729187965392
+      },
+      "4.0": {
+        "ttft_p50": 80.52575588226318,
+        "ttft_p99": 173.11453580856326,
+        "tpot_p50": 14.120327206108513,
+        "e2e_p99": 2.298865120410919
+      }
+    }
+  }
+}
