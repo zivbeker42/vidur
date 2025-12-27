@@ -20,7 +20,9 @@ try:
 
         def get_instance_patched(cls):
             if not hasattr(cls, "_instance"):
-                cls._instance = cls()
+                # Initialize with None to satisfy the constructor signature
+                # This assumes init() will be called later to populate them
+                cls._instance = cls(None, None, None, None)
             return cls._instance
 
         FlashinferAttentionWrapper.get_instance = classmethod(get_instance_patched)
