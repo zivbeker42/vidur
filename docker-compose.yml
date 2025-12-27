@@ -1,0 +1,32 @@
+services:
+  vllm:
+    image: nvcr.io/nvidia/vllm:25.11-py3
+    container_name: vllm-server
+    # runtime: nvidia
+    restart: unless-stopped
+    network_mode: "host"
+    ports:
+      - "8000:8000"
+    volumes:
+      # Caches Hugging Face models to your host home directory
+      - ~/.cache/huggingface:/root/.cache/huggingface
+      - ~/.cache/vllm:/root/.cache/vllm
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+      # Optimizes memory allocation for CUDA 13.0
+      # - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # The command specifically invokes the OpenAI API server entrypoint
+    command: >
+      python3 -m vllm.entrypoints.openai.api_server
+      --model TinyLlama/TinyLlama-1.1B-Chat-v1.0
+      --host 0.0.0.0
+      --port 8000
+      --gpu-memory-utilization 0.8

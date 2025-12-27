@@ -1,0 +1,23 @@
+services:
+  benchmark:
+    build:
+      context: .
+      dockerfile: Dockerfile.benchmark
+    container_name: vidur-benchmark
+    image: vidur-benchmark:latest
+    network_mode: "host"
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+    volumes:
+      # Mount the current directory to /app so the notebook is accessible
+      - .:/app
+      # Cache Hugging Face models to host to avoid re-downloading
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
