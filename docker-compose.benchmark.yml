@@ -1,17 +1,15 @@
 services:
-  benchmark:
+  server:
     build:
       context: .
       dockerfile: Dockerfile.benchmark
-    container_name: vidur-benchmark
-    image: vidur-benchmark:latest
+    container_name: vidur-benchmark-server
+    # Use host networking so it binds to localhost:8000 on the host
     network_mode: "host"
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
     volumes:
-      # Mount the current directory to /app so the notebook is accessible
       - .:/app
-      # Cache Hugging Face models to host to avoid re-downloading
       - ~/.cache/huggingface:/root/.cache/huggingface
     ipc: host
     deploy:
@@ -21,3 +19,20 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+    command: python3 benchmark_server.py
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.benchmark
+    container_name: vidur-benchmark-client
+    # Use host networking to access the server on localhost:8000
+    network_mode: "host"
+    volumes:
+      - .:/app
+    environment:
+      # Since we are on host network, localhost works
+      - VLLM_BASE_URL=http://localhost:8000/v1
+    depends_on:
+      - server
+    command: python3 benchmark_client.py
