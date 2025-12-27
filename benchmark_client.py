@@ -6,6 +6,8 @@ import pandas as pd
 import threading
 import sys
 import os
+import random
+import string
 
 # Configuration
 MODEL_NAME = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
@@ -37,8 +39,10 @@ def wait_for_server(url: str, timeout: int = 600):
     return False
 
 def run_request(prompt_len: int, decode_len: int):
-    # Approximate tokens with characters (1 token ~= 4 chars)
-    prompt_text = "A" * (prompt_len * 4)
+    # Generate random string to defeat cache
+    # 1 token ~= 4 chars approx
+    chars_len = prompt_len * 4
+    prompt_text = "".join(random.choices(string.ascii_letters + string.digits, k=chars_len))
 
     payload = {
         "model": MODEL_NAME,
