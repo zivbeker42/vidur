@@ -42,7 +42,9 @@ try:
                 # doesn't automatically register it if it's external.
                 # However, FlashinferAttentionWrapper.forward expects self.gpu_cache to be set.
                 
-                cache = self._backend.get_cache_block(num_blocks, dtype, device)
+                # Fix: The backend's get_cache_block likely only takes num_blocks.
+                # It probably uses the dtype and device stored during __init__.
+                cache = self._backend.get_cache_block(num_blocks)
                 
                 # We will create a list of references to the same cache block
                 # to simulate all layers having memory allocated (or just satisfy the index access).
