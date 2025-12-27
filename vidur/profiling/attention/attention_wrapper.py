@@ -72,10 +72,18 @@ try:
         FlashinferAttentionWrapper.get_instance = classmethod(get_instance_patched)
 
     # Monkeypatch MetricsStore to ensure singleton exists
+    # We create a robust Mock that ignores all calls/attributes to avoid dependency issues
     from sarathi.metrics.metrics_store import MetricsStore
 
     if not hasattr(MetricsStore, "_instance"):
-        MetricsStore._instance = MetricsStore()
+        class BlackHoleMock:
+            def __init__(self, *args, **kwargs): pass
+            def __getattr__(self, _): return self
+            def __call__(self, *args, **kwargs): return self
+            def __enter__(self): return self
+            def __exit__(self, *args): pass
+            
+        MetricsStore._instance = BlackHoleMock()
 
 except ImportError:
     pass
