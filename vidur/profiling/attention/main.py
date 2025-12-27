@@ -193,6 +193,9 @@ def main():
     for model in args.models:
         model_config = ModelConfig.from_model_name(model)
         for num_tensor_parallel_workers in args.num_tensor_parallel_workers:
+            if model_config.num_kv_heads % num_tensor_parallel_workers != 0:
+                continue
+
             max_num_blocks = get_max_num_blocks(
                 model_config,
                 ParallelConfig(

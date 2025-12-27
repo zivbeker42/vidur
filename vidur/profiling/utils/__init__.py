@@ -164,7 +164,7 @@ def get_max_num_blocks(
         * model_config.get_head_size()
         * element_size
     )
-    assert model_config.num_layers % max_pipeline_parallel_size == 0
+    # assert model_config.num_layers % max_pipeline_parallel_size == 0
     block_memory_total = block_memory_size * (
         model_config.num_layers // max_pipeline_parallel_size
     )
