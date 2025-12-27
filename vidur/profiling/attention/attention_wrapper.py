@@ -18,12 +18,27 @@ try:
 
     if not hasattr(FlashinferAttentionWrapper, "get_instance"):
 
+        class LazyFlashinferWrapperProxy:
+            def __init__(self):
+                self._backend = None
+
+            def init(self, model_config, parallel_config, block_size, device):
+                # Try to instantiate the real wrapper
+                # Note: 'block_size' might need to be a CacheConfig object if Sarathi expects it.
+                # We pass it through and hope Sarathi handles int or we fix it later.
+                self._backend = FlashinferAttentionWrapper(
+                    model_config, parallel_config, block_size, device
+                )
+
+            def __getattr__(self, name):
+                if self._backend is None:
+                    raise RuntimeError("FlashinferAttentionWrapper not initialized! Call init() first.")
+                return getattr(self._backend, name)
+
+        _proxy_instance = LazyFlashinferWrapperProxy()
+
         def get_instance_patched(cls):
-            if not hasattr(cls, "_instance"):
-                # Initialize with None to satisfy the constructor signature
-                # This assumes init() will be called later to populate them
-                cls._instance = cls(None, None, None, None)
-            return cls._instance
+            return _proxy_instance
 
         FlashinferAttentionWrapper.get_instance = classmethod(get_instance_patched)
 except ImportError:
