@@ -6,9 +6,17 @@ import sarathi.metrics.cuda_timer
 import torch
 
 from vidur.profiling.common.cuda_timer import CudaTimer
+import sarathi.metrics.cuda_timer
 
 # monkey patching the CudaTimer class to use the sarathi implementation
 sarathi.metrics.cuda_timer.CudaTimer = CudaTimer
+
+# Also patch where it is likely used/imported in Sarathi
+try:
+    import sarathi.model_executor.attention.base_attention_wrapper
+    sarathi.model_executor.attention.base_attention_wrapper.CudaTimer = CudaTimer
+except ImportError:
+    pass
 
 # Monkeypatch fix for Sarathi FlashinferAttentionWrapper missing get_instance
 try:

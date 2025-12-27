@@ -66,15 +66,22 @@ class CudaTimer:
         return self
 
     def handle_trace(self, trace):
-        events = trace.events()
-
+        events = trace.key_averages()
         if self.filter_str:
-            events = [e for e in events if e.name.startswith(self.filter_str)]
+            events = [e for e in events if self.filter_str in e.key]
 
-        total_cuda_time = self.aggregation_fn([e.cuda_time_total for e in events])
-        self.timer_stats_store.record_time(
-            self.name, total_cuda_time * 1e-3
-        )  # convert to ms
+        cuda_times = []
+        for e in events:
+            if hasattr(e, "cuda_time_total"):
+                cuda_times.append(e.cuda_time_total)
+            elif hasattr(e, "device_time_total"):
+                cuda_times.append(e.device_time_total)
+            else:
+                cuda_times.append(0)
+
+        total_cuda_time = self.aggregation_fn(cuda_times)
+        # convert from microseconds to milliseconds
+        self.timer_stats_store.record_time(self.name, total_cuda_time / 1e3)
 
     def __exit__(self, *args):
         if self.disabled:
