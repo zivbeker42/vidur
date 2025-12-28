@@ -2,6 +2,9 @@ FROM nvcr.io/nvidia/pytorch:24.01-py3
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH=${CUDA_HOME}/bin:${PATH}
+ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -38,16 +41,16 @@ WORKDIR /workspace/sarathi-serve
 # 2. We export that as CUDA_HOME
 # 3. We add it to PATH
 # 4. We run pip install
-RUN export CUDA_HOME=$(ls -d /usr/local/cuda-* | head -n 1) && \
-    echo "Detected CUDA_HOME as: $CUDA_HOME" && \
-    if [ -z "$CUDA_HOME" ]; then echo "Error: Could not find CUDA directory in /usr/local"; exit 1; fi && \
-    export PATH=$CUDA_HOME/bin:$PATH && \
-    export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH && \
-    # Verify nvcc exists there
-    if [ ! -f "$CUDA_HOME/bin/nvcc" ]; then echo "Error: nvcc not found at $CUDA_HOME/bin/nvcc"; exit 1; fi && \
-    echo "nvcc found at: $($CUDA_HOME/bin/nvcc --version)" && \
+# RUN export CUDA_HOME=$(ls -d /usr/local/cuda-* | head -n 1) && \
+#     echo "Detected CUDA_HOME as: $CUDA_HOME" && \
+#     if [ -z "$CUDA_HOME" ]; then echo "Error: Could not find CUDA directory in /usr/local"; exit 1; fi && \
+#     export PATH=$CUDA_HOME/bin:$PATH && \
+#     export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH && \
+#     # Verify nvcc exists there
+#     if [ ! -f "$CUDA_HOME/bin/nvcc" ]; then echo "Error: nvcc not found at $CUDA_HOME/bin/nvcc"; exit 1; fi && \
+#     echo "nvcc found at: $($CUDA_HOME/bin/nvcc --version)" && \
     # Install with --no-build-isolation to use system torch
-    pip install --no-build-isolation -v .
+RUN pip install --no-build-isolation -v .
 
 WORKDIR /app
 ENV PYTHONPATH="${PYTHONPATH}:/app"
