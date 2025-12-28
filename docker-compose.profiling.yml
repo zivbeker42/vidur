@@ -1,0 +1,50 @@
+services:
+  profile-mlp:
+    build:
+      context: .
+      dockerfile: Dockerfile.benchmark
+    container_name: vidur-profile-mlp
+    # Host networking and IPC are crucial for Ray and multi-GPU communication
+    network_mode: "host"
+    ipc: host
+    shm_size: '32gb' # Increase shared memory for Ray/PyTorch
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - .:/app
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+      - KINETO_LOG_LEVEL=5 # Recommended for profiling logs
+    command: python3 profile_mlp_runner.py
+
+  profile-attention:
+    image: vidur-profile-mlp:latest # Reuse the image built by profile-mlp
+    # Ensure profile-mlp builds the image first if running together, 
+    # but docker compose usually handles 'build: .' correctly. 
+    # We explicitly point to the same build context to share the layer cache.
+    build:
+      context: .
+      dockerfile: Dockerfile.benchmark
+    container_name: vidur-profile-attention
+    network_mode: "host"
+    ipc: host
+    shm_size: '32gb'
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - .:/app
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+    command: python3 profile_attention_runner.py
