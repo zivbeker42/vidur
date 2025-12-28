@@ -1,58 +1,19 @@
-FROM nvcr.io/nvidia/pytorch:24.01-py3 AS base
+FROM nvcr.io/nvidia/vllm:25.11-py3
 
-# Set environment variables
-ENV DEBIAN_FRONTEND=noninteractive
-# ENV CUDA_HOME=/usr/local/cuda
-# ENV PATH=${CUDA_HOME}/bin:${PATH}
-# ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python dependencies required by the benchmark notebook and profiling
-# vllm is already included in the base image
+# Install Python dependencies required by the benchmark notebook
 RUN pip install --no-cache-dir \
-    vllm \
     pandas \
     numpy \
     matplotlib \
     requests \
     nest_asyncio \
-    jupyterlab \
-    scipy \
-    ray[default] \
-    wandb \
-    kaleido \
-    plotly \
-    seaborn \
-    fasteners \
-    pyyaml \
-    tqdm \
-    packaging \
-    setuptools \
-    wheel
+    jupyterlab
 
 # Set the working directory
 WORKDIR /app
-
-# Ensure local python path includes the current directory
-ENV PYTHONPATH="${PYTHONPATH}:/app"
 
 # Expose ports for Jupyter (8888) and vLLM (8000)
 EXPOSE 8888 8000
 
 # Start Jupyter Lab
 CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token='1'", "--NotebookApp.password=''1"]
-
-# ---------------------------------------------------------------------------
-# Stage: sarathi
-# ---------------------------------------------------------------------------
-FROM base AS sarathi
-                                                                                                       │
-# Install Sarathi-Serve                                                                                                                                                               │
-# We use --no-build-isolation to ensure it uses the pre-installed CUDA/Torch versions                                                                                                 │
-RUN CUDA_HOME=/usr/local/cuda pip install --no-build-isolation git+https://github.com/microsoft/sarathi-serve.git@vidur      
-
-WORKDIR /app

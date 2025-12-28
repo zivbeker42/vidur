@@ -3,7 +3,7 @@ services:
     image: vidur-benchmark:latest
     build:
       context: .
-      dockerfile: Dockerfile.benchmark
+      dockerfile: Dockerfile.profiling
     container_name: vidur-profile-mlp
     # Host networking and IPC are crucial for Ray and multi-GPU communication
     network_mode: "host"
@@ -28,7 +28,7 @@ services:
     image: vidur-benchmark:latest
     build:
       context: .
-      dockerfile: Dockerfile.benchmark
+      dockerfile: Dockerfile.profiling
     container_name: vidur-profile-attention
     network_mode: "host"
     ipc: host
