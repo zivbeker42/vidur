@@ -1,10 +1,10 @@
-FROM nvcr.io/nvidia/vllm:25.11-py3 AS base
+FROM nvcr.io/nvidia/pytorch:24.01-py3 AS base
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
-ENV CUDA_HOME=/usr/local/cuda
-ENV PATH=${CUDA_HOME}/bin:${PATH}
-ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
+# ENV CUDA_HOME=/usr/local/cuda
+# ENV PATH=${CUDA_HOME}/bin:${PATH}
+# ENV LD_LIBRARY_PATH=${CUDA_HOME}/lib64:${LD_LIBRARY_PATH}
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
 # Install Python dependencies required by the benchmark notebook and profiling
 # vllm is already included in the base image
 RUN pip install --no-cache-dir \
+    vllm \
     pandas \
     numpy \
     matplotlib \
@@ -27,9 +28,8 @@ RUN pip install --no-cache-dir \
     plotly \
     seaborn \
     fasteners \
-    pyyaml 
-
-RUN pip install tqdm \
+    pyyaml \
+    tqdm \
     packaging \
     setuptools \
     wheel
@@ -50,10 +50,9 @@ CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-r
 # Stage: sarathi
 # ---------------------------------------------------------------------------
 FROM base AS sarathi
-
-# Install Sarathi-Serve as a library directly from the vidur branch
-# We use --no-build-isolation to ensure it uses the system's CUDA/Torch environment
-# RUN CUDA_HOME=/usr/local/cuda pip install --no-build-isolation git+https://github.com/microsoft/sarathi-serve.git@vidur
-RUN pip install sarathi
+                                                                                                       │
+# Install Sarathi-Serve                                                                                                                                                               │
+# We use --no-build-isolation to ensure it uses the pre-installed CUDA/Torch versions                                                                                                 │
+RUN CUDA_HOME=/usr/local/cuda pip install --no-build-isolation git+https://github.com/microsoft/sarathi-serve.git@vidur      
 
 WORKDIR /app
