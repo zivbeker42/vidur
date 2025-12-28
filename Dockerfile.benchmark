@@ -27,8 +27,12 @@ RUN pip install --no-cache-dir \
     plotly \
     seaborn \
     fasteners \
-    pyyaml \
-    tqdm
+    pyyaml 
+
+RUN pip install tqdm \
+    packaging \
+    setuptools \
+    wheel
 
 # Set the working directory
 WORKDIR /app
@@ -44,16 +48,12 @@ CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-r
 
 # ---------------------------------------------------------------------------
 # Stage: sarathi
-# This stage attempts to install Sarathi-Serve. 
-# It is separated so users can build 'base' and debug installation manually.
 # ---------------------------------------------------------------------------
-
-WORKDIR /workspace
-RUN git clone --branch vidur https://github.com/microsoft/sarathi-serve.git
-
 FROM base AS sarathi
 
-RUN cd sarathi-serve \
-    && pip install -e .
+# Install Sarathi-Serve as a library directly from the vidur branch
+# We use --no-build-isolation to ensure it uses the system's CUDA/Torch environment
+# RUN CUDA_HOME=/usr/local/cuda pip install --no-build-isolation git+https://github.com/microsoft/sarathi-serve.git@vidur
+RUN pip install sarathi
 
 WORKDIR /app
