@@ -1,10 +1,10 @@
 {
-  "experiment_id": "tinyllama-1b-t4-local-run1",
+  "experiment_id": "tinyllama-1b-dgx_spark-local-run1",
   "config": {
     "model": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
     "tp": 1,
     "pp": 1,
-    "gpu": "Local-GPU"
+    "gpu": "dgx-spark"
   },
   "workload": {
     "type": "synthetic_poisson_mixed",
