@@ -1,5 +1,6 @@
 services:
   profile-mlp:
+    image: vidur-benchmark:latest
     build:
       context: .
       dockerfile: Dockerfile.benchmark
@@ -24,10 +25,7 @@ services:
     command: python3 profile_mlp_runner.py
 
   profile-attention:
-    image: vidur-profile-mlp:latest # Reuse the image built by profile-mlp
-    # Ensure profile-mlp builds the image first if running together, 
-    # but docker compose usually handles 'build: .' correctly. 
-    # We explicitly point to the same build context to share the layer cache.
+    image: vidur-benchmark:latest
     build:
       context: .
       dockerfile: Dockerfile.benchmark
