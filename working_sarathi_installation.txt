@@ -1,0 +1,57 @@
+    1  ll
+    2  python 
+    3  git clone https://github.com/microsoft/sarathi-serve.git
+    4  cd sarathi-serve/
+    5  git checkout vidur 
+    6  pip install --no-build-isolation . 
+    7  vim setup.py 
+    8  vi setup.py 
+    9  vi requirements
+   10  vi requirements.txt 
+   11  vi setup.py 
+   12  pip install --no-build-isolation . 
+   13  nvcc --version \
+   14  nvcc --version 
+   15  pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+   16  pip3 install --upgrade torch torchvision --index-url https://download.pytorch.org/whl/cu130
+   17  pip install --no-build-isolation . 
+   18  vim setup.py
+   19  vi setup.py 
+   20  vi requirements.txt 
+   21  pip install --no-build-isolation . 
+   22  python
+   23  pip install --no-build-isolation --no-deps . 
+   24  sudo apt install cusparse
+   25  apt search cusparse
+   26  apt install --upgrade libcusparselt0-dev-cuda-13
+   27  python 
+   28  ls -l /usr/local/cuda/include/cusparse.h || echo "missing"
+   29  apt-get install -y --no-install-recommends   cuda-cusparse-dev cuda-cublas-dev
+   30  apt-get install -y --no-install-recommends cuda-toolkit-13-0
+   31  apt update 
+   32  apt-get install -y --no-install-recommends   cuda-cusparse-dev cuda-cublas-dev
+   33  apt-get install -y --no-install-recommends cuda-toolkit-13-0
+   34  apt search cuda-tookit
+   35  apt search cuda-tookit-*
+   36  apt search *cuda-*
+   37  apt search cuda-*
+   38  apt search nvidia-cuda-toolkit
+   39  apt install nvidia-cuda-toolkit
+   40  pip install --no-build-isolation --no-deps . 
+   41  pip install torch
+   42  python
+   43  nvcc --version 
+   44  apt install nvidia-cuda-toolkit-13-0
+   45  apt install nvidia-cuda-toolkit-13
+   46  apt search nvidia-cuda-tookit*
+   47  apt search nvidia-cuda-tooki*
+   48  apt search nvidia-cuda-*
+   49  apt update 
+   50  apt list --upgradable 
+   51  pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+   52  pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+   53  pip3 uninstall torch torchvision 
+   54  pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+   55  pip install --no-build-isolation --no-deps . 
+   56  history 
+   57  history > working_sarathi_installation.txt

@@ -1,0 +1,12 @@
+    1  git clone https://github.com/microsoft/sarathi-serve.git
+    2  cd sarathi-serve/
+    3  apt update 
+    4  apt install -y nvidia-cuda-toolkit 
+    5  pip uninstall torch torchvision
+    6  pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+    7  vi requirements.txt 
+    8  pip install --no-build-isolation . 
+    9  git checkout -f vidur
+   10  vi requirements.txt 
+   11  pip install --no-build-isolation . 
+   12  history > final_installation.txt
