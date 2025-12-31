@@ -34,6 +34,11 @@ RUN cd sarathi-serve/
 
 RUN apt update 
 RUN apt install -y nvidia-cuda-toolkit 
-RUN pip uninstall torch torchvision
-RUN pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+RUN pip uninstall -y torch torchvision
+RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+RUN rm -rf sarathi-serve
+RUN git clone --branch vidur https://github.com/zivbeker42/sarathi-serve.git
+WORKDIR /app/sarathi-serve
+
+ENV TORCH_CUDA_ARCH_LIST="8.0 8.6 9.0"
 RUN pip install --no-build-isolation . 
