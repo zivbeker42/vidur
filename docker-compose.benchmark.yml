@@ -10,7 +10,7 @@ services:
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
     volumes:
-      - .:/app
+      - .:/app/vidur
       - ~/.cache/huggingface:/root/.cache/huggingface
       - ~/.cache/vllm:/root/.cache/vllm
     ipc: host
@@ -32,7 +32,7 @@ services:
     # Use host networking to access the server on localhost:8000
     network_mode: "host"
     volumes:
-      - .:/app
+      - .:/app/vidur
     environment:
       # Since we are on host network, localhost works
       - VLLM_BASE_URL=http://localhost:8000/v1
