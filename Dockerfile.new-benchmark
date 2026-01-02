@@ -1,0 +1,44 @@
+FROM nvcr.io/nvidia/vllm:24.12-py3 AS vidur-benchmarking-vllm-24.12
+
+# Install Python dependencies required by the benchmark notebook
+RUN pip install --no-cache-dir \
+    pandas \
+    numpy \
+    matplotlib \
+    requests \
+    nest_asyncio \
+    jupyterlab \
+    scipy \
+    ray[default] \
+    wandb \
+    kaleido \
+    plotly \
+    seaborn \
+    fasteners \
+    pyyaml \
+    tqdm
+
+# Set the working directory
+WORKDIR /app
+
+# Expose ports for Jupyter (8888) and vLLM (8000)
+EXPOSE 8888 8000
+
+# Start Jupyter Lab
+CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token='1'", "--NotebookApp.password=''1"]
+
+FROM vidur-benchmarking-vllm-24.12 AS vidur-profiling
+
+# reinstall pytorch as needed
+RUN apt update 
+RUN apt install -y nvidia-cuda-toolkit 
+RUN pip uninstall -y torch torchvision
+RUN pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu126
+
+# clone and install sarathi-serve
+RUN git clone --branch vidur https://github.com/zivbeker42/sarathi-serve.git
+RUN cd sarathi-serve/
+WORKDIR /app/sarathi-serve
+ENV TORCH_CUDA_ARCH_LIST="8.0 8.6 9.0"
+RUN pip install --no-build-isolation . 
+WORKDIR /app/vidur
