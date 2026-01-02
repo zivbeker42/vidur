@@ -42,3 +42,5 @@ WORKDIR /app/sarathi-serve
 
 ENV TORCH_CUDA_ARCH_LIST="8.0 8.6 9.0"
 RUN pip install --no-build-isolation . 
+
+WORKDIR /app/vidur
