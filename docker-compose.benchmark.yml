@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.benchmark
-    image: vidur-benchmark:latest
+    image: vidur-profiling:latest
     container_name: vidur-benchmark-server
     # Use host networking so it binds to localhost:8000 on the host
     network_mode: "host"
@@ -27,7 +27,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.benchmark
-    image: vidur-benchmark:latest
+    image: vidur-profiling:latest
     container_name: vidur-benchmark-client
     # Use host networking to access the server on localhost:8000
     network_mode: "host"
